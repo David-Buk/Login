@@ -36,7 +36,6 @@ public class LoginActivity extends AppCompatActivity {
                 if ("admin".equals(role)) {
                     Toast.makeText(LoginActivity.this, "Welcome Admin", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
-                    //intent.putExtra("email", email);
                     startActivity(intent);
                 }
 
@@ -46,14 +45,10 @@ public class LoginActivity extends AppCompatActivity {
                     intent.putExtra("email", email);
                     startActivity(intent);
                 }
-
-                else
-                    Toast.makeText(LoginActivity.this, "User is Invalid", Toast.LENGTH_SHORT).show();
             }
 
             else {
                 Toast.makeText(LoginActivity.this, "Invalid login credentials", Toast.LENGTH_SHORT).show();
-                return;
             }
         });
 
