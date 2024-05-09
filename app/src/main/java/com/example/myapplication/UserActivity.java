@@ -1,24 +1,43 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import android.view.View;
+import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class UserActivity extends AppCompatActivity {
+
+    private Button btnBook;
+    private Button btnBookings;
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        // Retrieve the email passed from the login activity
+        email = getIntent().getStringExtra("email");
+
+        btnBook = findViewById(R.id.btnBook);
+        btnBookings = findViewById(R.id.btnBookings);
+
+        btnBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UserActivity.this, BookingActivity.class);
+                intent.putExtra("email", email);
+                startActivity(intent);
+            }
+        });
+
+        btnBookings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UserActivity.this, UserBookingActivity.class);
+                intent.putExtra("email", email);
+                startActivity(intent);
+            }
         });
     }
 }
