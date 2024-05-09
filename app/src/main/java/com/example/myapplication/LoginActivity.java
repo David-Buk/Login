@@ -30,17 +30,30 @@ public class LoginActivity extends AppCompatActivity {
 
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(LoginActivity.this, "Please enter both email and password", Toast.LENGTH_SHORT).show();
-            } else if (role != null) {
+            }
+
+            else if (role != null) {
                 if ("admin".equals(role)) {
                     Toast.makeText(LoginActivity.this, "Welcome Admin", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(LoginActivity.this, AdminActivity.class));
-                } else if ("user".equals(role)){
+                    Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
+                    //intent.putExtra("email", email);
+                    startActivity(intent);
+                }
+
+                else if ("user".equals(role)){
                     Toast.makeText(LoginActivity.this, "Welcome Patient", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(LoginActivity.this, UserActivity.class));
-                } else
+                    Intent intent = new Intent(LoginActivity.this, UserActivity.class);
+                    intent.putExtra("email", email);
+                    startActivity(intent);
+                }
+
+                else
                     Toast.makeText(LoginActivity.this, "User is Invalid", Toast.LENGTH_SHORT).show();
-            } else {
+            }
+
+            else {
                 Toast.makeText(LoginActivity.this, "Invalid login credentials", Toast.LENGTH_SHORT).show();
+                return;
             }
         });
 

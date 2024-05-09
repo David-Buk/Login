@@ -5,4 +5,18 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="select_campus">All Campuses</string>
+    <string name="select_date">Select Date</string>
+    <string name="select_slot">Select Time slot</string>
+    <string name="book_slot">Book</string>
+    <string name="campus">Campus</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string-array name="campus_array">
+        <item>All Campuses</item>
+        <item>Steve Biko Campus</item>
+        <item>Ritson Campus</item>
+        <item>ML Sultan Campus</item>
+        <item>City Campus</item>
+    </string-array>
 </resources>

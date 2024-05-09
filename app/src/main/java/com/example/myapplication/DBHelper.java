@@ -28,10 +28,28 @@ public class DBHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    private static final String TABLE_BOOKINGS = "Bookings";
+    private static final String COLUMN_ID = "booking_id";
+    private static final String COLUMN_CAMPUS = "campus";
+    private static final String COLUMN_DATE = "date";
+    private static final String COLUMN_TIME_SLOT = "time_slot";
+    private static final String COLUMN_USER_EMAIL = "userEmail";
+
+
+    private static final String CREATE_TABLE_BOOKINGS = "CREATE TABLE " + TABLE_BOOKINGS + " ("
+            + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_CAMPUS + " TEXT,"
+            + COLUMN_DATE + " TEXT,"
+            + COLUMN_TIME_SLOT + " TEXT,"
+            + COLUMN_USER_EMAIL + " TEXT,"
+            + "FOREIGN KEY (" + COLUMN_USER_EMAIL + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_EMAIL + "))";
+
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USERS);
-        addUserDirectly(db,"admin@dut4life.ac.za", "admin1234", "admin");
+        db.execSQL(CREATE_TABLE_BOOKINGS);
+        addUserDirectly(db, "admin@dut4life.ac.za", "admin1234", "admin");
         addUserDirectly(db, "david@gmail.com", "12345", "user");
         addUserDirectly(db, "bob@gmail.com", "12345", "user");
     }
@@ -39,6 +57,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOOKINGS);
         onCreate(db);
     }
 
@@ -91,30 +110,26 @@ public class DBHelper extends SQLiteOpenHelper {
     // --------------------------------------------------- BOOKINGS -------------------------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private static final String TABLE_BOOKINGS = "Bookings";
-    private static final String COLUMN_ID = "booking_id";
-    private static final String COLUMN_CAMPUS = "campus";
-    private static final String COLUMN_DATE = "date";
-    private static final String COLUMN_TIME_SLOT = "time_slot";
+    public boolean isSlotBooked(String campusName, String slotTime, String bookingDate) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_BOOKINGS + " WHERE "
+                + COLUMN_CAMPUS + " = ? AND "
+                + COLUMN_TIME_SLOT + " = ? AND "
+                + COLUMN_DATE + " = ?";
+        String[] selectionArgs = new String[]{campusName, slotTime, bookingDate};
 
-    private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + TABLE_BOOKINGS + " (" +
-                    COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_CAMPUS + " TEXT," +
-                    COLUMN_DATE + " TEXT," +
-                    COLUMN_TIME_SLOT + " TEXT," +
-                    "FOREIGN KEY (" + COLUMN_EMAIL + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_EMAIL + "))";
-
-
-    private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + TABLE_BOOKINGS;
-
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+        boolean isBooked = cursor.moveToFirst(); // True if cursor is not empty
+        cursor.close();
+        db.close();
+        return isBooked;
+    }
 
 
     public long insertBooking(String email, String campus, String date, String timeSlot) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_USER_EMAIL, email);
         values.put(COLUMN_CAMPUS, campus);
         values.put(COLUMN_DATE, date);
         values.put(COLUMN_TIME_SLOT, timeSlot);
@@ -134,7 +149,7 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 @SuppressLint("Range") Bookings booking = new Bookings(
-                        cursor.getString(cursor.getColumnIndex("email")),
+                        cursor.getString(cursor.getColumnIndex("userEmail")),
                         cursor.getString(cursor.getColumnIndex("campus")),
                         cursor.getString(cursor.getColumnIndex("date")),
                         cursor.getString(cursor.getColumnIndex("time_slot"))
@@ -148,20 +163,20 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Bookings> getBookingsByUserId(String userId) {
+    public List<Bookings> getBookingsByEmail(String email) {
         List<Bookings> bookingsList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String[] columns = {COLUMN_ID, COLUMN_EMAIL, COLUMN_CAMPUS, COLUMN_DATE, COLUMN_TIME_SLOT};
-        String selection = COLUMN_EMAIL + " = ?";
-        String[] selectionArgs = {userId};
+        String[] columns = {COLUMN_ID, COLUMN_USER_EMAIL, COLUMN_CAMPUS, COLUMN_DATE, COLUMN_TIME_SLOT};
+        String selection = COLUMN_USER_EMAIL + " = ?";
+        String[] selectionArgs = {email};
 
         Cursor cursor = db.query(TABLE_BOOKINGS, columns, selection, selectionArgs, null, null, null);
 
         if (cursor.moveToFirst()) {
             do {
                 @SuppressLint("Range") Bookings booking = new Bookings(
-                        cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)),
+                        cursor.getString(cursor.getColumnIndex(COLUMN_USER_EMAIL)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_CAMPUS)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_DATE)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_TIME_SLOT))
@@ -186,7 +201,7 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 @SuppressLint("Range") Bookings booking = new Bookings(
-                        cursor.getString(cursor.getColumnIndex("email")),
+                        cursor.getString(cursor.getColumnIndex("userEmail")),
                         cursor.getString(cursor.getColumnIndex("campus")),
                         cursor.getString(cursor.getColumnIndex("date")),
                         cursor.getString(cursor.getColumnIndex("time_slot"))

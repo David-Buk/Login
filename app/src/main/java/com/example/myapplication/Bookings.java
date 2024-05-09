@@ -1,25 +1,23 @@
 package com.example.myapplication;
 
 public class Bookings {
-    private String userEmail;
+    private String email;
     private String campus;
     private String date;
     private String time;
 
-    public Bookings(String userEmail, String campus, String date, String time) {
-        this.userEmail = userEmail;
+    public Bookings(String email, String campus, String date, String time) {
+        this.email = email;
         this.campus = campus;
         this.date = date;
         this.time = time;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public String getEmail() {
+        return email;
     }
 
-    public String getCampus() {
-        return campus;
-    }
+    public String getCampus() {return campus; }
 
     public String getDate() {
         return date;
