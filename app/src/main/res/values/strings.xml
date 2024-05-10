@@ -12,11 +12,12 @@
     <string name="campus">Campus</string>
     <string name="date">Date</string>
     <string name="time">Time</string>
+    <string name="status">Status</string>
     <string-array name="campus_array">
         <item>All Campuses</item>
-        <item>Steve Biko Campus</item>
-        <item>Ritson Campus</item>
-        <item>ML Sultan Campus</item>
-        <item>City Campus</item>
+        <item>Steve Biko</item>
+        <item>Ritson</item>
+        <item>ML Sultan</item>
+        <item>City</item>
     </string-array>
 </resources>

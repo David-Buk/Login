@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AdminActivity">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
 
-    <TextView
+    <Button
+        android:id="@+id/btnViewPending"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/admin_dash"/>
+        android:text="View Pending Bookings"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnViewCompleted"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Completed Bookings"/>
 
 </LinearLayout>

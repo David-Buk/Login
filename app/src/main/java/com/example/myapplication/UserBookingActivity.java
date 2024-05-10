@@ -38,6 +38,19 @@ public class UserBookingActivity extends AppCompatActivity {
         refreshButton.setOnClickListener(v -> refreshBookings());
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update the booking status each time the activity resumes
+        dbHelper.updateBookingStatus();
+
+        // Refresh the bookings list to reflect any changes
+        List<Bookings> updatedBookings = dbHelper.getAllBookings();
+        bookingsAdapter.updateData(updatedBookings);
+    }
+
+
     private void refreshBookings() {
         List<Bookings> bookings = dbHelper.getBookingsByEmail(email);
         if (bookingsAdapter == null) {

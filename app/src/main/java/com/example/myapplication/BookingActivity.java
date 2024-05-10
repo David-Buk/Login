@@ -51,7 +51,7 @@ public class BookingActivity extends AppCompatActivity {
     private void setupCampusSpinner() {
         // Sample campus names, replace with actual campus names
         String[] campuses = new String[] {
-                "Steve Biko Campus", "Ritson Campus", "ML Sultan Campus", "City Campus"
+                "Steve Biko", "Ritson", "ML Sultan", "City"
         };
         ArrayAdapter<String> campusAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, campuses);
@@ -95,12 +95,12 @@ public class BookingActivity extends AppCompatActivity {
     private void setupTimeSlots() {
         // Sample time slots, replace with dynamic data if needed
         String[] timeSlots = new String[]{
-                "09:00 AM - 09:20 AM", "09:25 AM - 09:45 AM", "10:10 AM - 10:30 AM", "10:35 AM - 10:55 AM",
-                "11:00 AM - 11:20 AM", "11:25 AM - 11:45 AM", "11:50 AM - 12:10 PM", "12:15 PM - 12:35 PM",
-                "12:40 PM - 01:00 PM",
+                "09:00 - 09:20 ", "09:25 - 09:45 ", "10:10 - 10:30 ", "10:35 - 10:55 ",
+                "11:00 - 11:20 ", "11:25 - 11:45 ", "11:50 - 12:10 ", "12:15 - 12:35 ",
+                "12:40 - 13:00 ",
                 //Break time
-                "02:00 PM - 02:15 PM", "02:20 PM - 02:40 PM", "02:45 PM - 03:05 PM", "03:10 PM - 03:30 PM",
-                "03:35 PM - 03:55 PM", "03:50 PM - 04:10 PM", "04:15 PM - 04:35 PM", "04:40 PM - 05:00 PM"
+                "14:00 - 14:15 ", "14:20 - 14:40 ", "14:45 - 15:05 ", "15:10 - 15:30 ",
+                "15:35 - 15:55 ", "15:50 - 16:10 ", "16:15 - 16:35 ", "16:40 - 17:00 "
         };
         ArrayAdapter<String> timeSlotAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, timeSlots);
@@ -132,7 +132,7 @@ public class BookingActivity extends AppCompatActivity {
 
         if (!dbHelper.isSlotBooked(selectedCampus, selectedTimeSlot, formattedDate)) {
             // Slot is not booked, proceed with booking
-            long result = dbHelper.insertBooking(email, selectedCampus, formattedDate, selectedTimeSlot);
+            long result = dbHelper.insertBooking(email, selectedCampus, formattedDate, selectedTimeSlot, "pending");
             if (result != -1) {
                 setupNotification(formattedDate, selectedTimeSlot, selectedCampus);
                 Toast.makeText(this, "Booking successful!", Toast.LENGTH_LONG).show();

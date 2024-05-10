@@ -6,13 +6,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "LoginDatabase";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
     private static final String TABLE_USERS = "users";
     private static final String COLUMN_EMAIL = "email";
     private static final String COLUMN_PASSWORD = "password";
@@ -33,6 +36,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_CAMPUS = "campus";
     private static final String COLUMN_DATE = "date";
     private static final String COLUMN_TIME_SLOT = "time_slot";
+    private static final String COLUMN_STATUS = "status";
     private static final String COLUMN_USER_EMAIL = "userEmail";
 
 
@@ -41,6 +45,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_CAMPUS + " TEXT,"
             + COLUMN_DATE + " TEXT,"
             + COLUMN_TIME_SLOT + " TEXT,"
+            + COLUMN_STATUS + " TEXT,"
             + COLUMN_USER_EMAIL + " TEXT,"
             + "FOREIGN KEY (" + COLUMN_USER_EMAIL + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_EMAIL + "))";
 
@@ -126,13 +131,14 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public long insertBooking(String email, String campus, String date, String timeSlot) {
+    public long insertBooking(String email, String campus, String date, String timeSlot, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_EMAIL, email);
         values.put(COLUMN_CAMPUS, campus);
         values.put(COLUMN_DATE, date);
         values.put(COLUMN_TIME_SLOT, timeSlot);
+        values.put(COLUMN_STATUS, status);
 
         long newRowId = db.insert(TABLE_BOOKINGS, null, values);
         db.close();
@@ -152,7 +158,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex("userEmail")),
                         cursor.getString(cursor.getColumnIndex("campus")),
                         cursor.getString(cursor.getColumnIndex("date")),
-                        cursor.getString(cursor.getColumnIndex("time_slot"))
+                        cursor.getString(cursor.getColumnIndex("time_slot")),
+                        cursor.getString(cursor.getColumnIndex("status"))
                 );
                 bookingsList.add(booking);
             } while (cursor.moveToNext());
@@ -167,7 +174,7 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Bookings> bookingsList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String[] columns = {COLUMN_ID, COLUMN_USER_EMAIL, COLUMN_CAMPUS, COLUMN_DATE, COLUMN_TIME_SLOT};
+        String[] columns = {COLUMN_ID, COLUMN_USER_EMAIL, COLUMN_CAMPUS, COLUMN_DATE, COLUMN_TIME_SLOT, COLUMN_STATUS};
         String selection = COLUMN_USER_EMAIL + " = ?";
         String[] selectionArgs = {email};
 
@@ -179,7 +186,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex(COLUMN_USER_EMAIL)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_CAMPUS)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_DATE)),
-                        cursor.getString(cursor.getColumnIndex(COLUMN_TIME_SLOT))
+                        cursor.getString(cursor.getColumnIndex(COLUMN_TIME_SLOT)),
+                        cursor.getString(cursor.getColumnIndex(COLUMN_STATUS))
                 );
                 bookingsList.add(booking);
             } while (cursor.moveToNext());
@@ -190,12 +198,35 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Bookings> getBookingsByCampus(String campus) {
+
+    public List<Bookings> getBookingsByCampus(String campus, String status) {
         List<Bookings> bookingsList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String selection = campus.equals("All Campuses") ? null : COLUMN_CAMPUS + " = ?";
-        String[] selectionArgs = campus.equals("All Campuses") ? null : new String[]{campus};
 
+        List<String> selectionArgsList = new ArrayList<>();
+        String selection = "";
+
+        // Handle campus filtering
+        if (!campus.equals("All Campuses")) {
+            selection += "campus = ?";
+            selectionArgsList.add(campus);
+        }
+
+        // Handle status filtering
+        if (!status.equals("All Statuses")) {
+            if (!selection.isEmpty()) {
+                selection += " AND ";
+            }
+            selection += "status = ?";
+            selectionArgsList.add(status);
+        }
+
+        // Default case where no campus or status is specified
+        if (selection.isEmpty()) {
+            selection = "1"; // This will return all rows
+        }
+
+        String[] selectionArgs = selectionArgsList.toArray(new String[0]);
         Cursor cursor = db.query(TABLE_BOOKINGS, null, selection, selectionArgs, null, null, null);
 
         if (cursor.moveToFirst()) {
@@ -204,7 +235,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex("userEmail")),
                         cursor.getString(cursor.getColumnIndex("campus")),
                         cursor.getString(cursor.getColumnIndex("date")),
-                        cursor.getString(cursor.getColumnIndex("time_slot"))
+                        cursor.getString(cursor.getColumnIndex("time_slot")),
+                        cursor.getString(cursor.getColumnIndex("status"))
                 );
                 bookingsList.add(booking);
             } while (cursor.moveToNext());
@@ -213,4 +245,18 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return bookingsList;
     }
+
+
+
+    public void updateBookingStatus() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
+        // SQL to update status based on date and time
+        String sql = "UPDATE Bookings SET status = 'done' WHERE date < ? OR (date = ? AND time_slot <= ?)";
+        db.execSQL(sql, new String[]{ currentDate, currentDate, currentTime });
+        db.close();
+    }
+
 }

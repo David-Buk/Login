@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class AdminBookingActivity extends AppCompatActivity {
+public class AdminBookingHistoryActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private BookingsAdapter bookingsAdapter;
@@ -68,7 +68,7 @@ public class AdminBookingActivity extends AppCompatActivity {
 
 
     private void filterBookingsByCampus(String campus) {
-        List<Bookings> filteredBookings = dbHelper.getBookingsByCampus(campus, "pending");
+        List<Bookings> filteredBookings = dbHelper.getBookingsByCampus(campus, "done");
         bookingsAdapter.updateData(filteredBookings);
     }
 }

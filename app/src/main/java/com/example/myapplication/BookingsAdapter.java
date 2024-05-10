@@ -23,6 +23,7 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
         private final TextView campusTextView;
         private final TextView dateTextView;
         private final TextView timeTextView;
+        private final TextView statusTextView;
 
         public ViewHolder(View view) {
             super(view);
@@ -30,6 +31,7 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
             campusTextView = view.findViewById(R.id.campusTextView);
             dateTextView = view.findViewById(R.id.dateTextView);
             timeTextView = view.findViewById(R.id.timeTextView);
+            statusTextView = view.findViewById(R.id.statusTextView);
         }
     }
 
@@ -53,6 +55,7 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
         holder.campusTextView.setText(booking.getCampus());
         holder.dateTextView.setText(booking.getDate());
         holder.timeTextView.setText(booking.getTime());
+        holder.statusTextView.setText(booking.getStatus());
     }
 
 
